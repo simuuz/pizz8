@@ -13,7 +13,7 @@ void Cpu::execute(SDL_Event* evt) {
         if (kk == 0xe0) {
             for(int yy = 0; yy < 32; yy++) {
                 for(int xx = 0; xx < 64; xx++) {
-                    mem->display[xx+64*yy] = 0;
+                    mem->display[xx+64*yy] = 0xffffffff;
                 }
             }
         } else if (kk == 0xee) {
@@ -112,13 +112,12 @@ void Cpu::dxyn(u8 x, u8 y, u8 n) {
             u8 data = mem->mem[I+yy];
             if(data & (0x80 >> xx)) {
                 u8 cx = (v[x] + xx) % 64, cy = (v[y] + yy) % 32;
-                if((mem->display[cx+64*cy] == 0xffffffff)) {
+                if((mem->display[cx+64*cy] == 0x000000ff)) {
                     v[0xf] = 1;
-                    mem->display[cx+64*cy] = 0x000000ff;
-                } else {
                     mem->display[cx+64*cy] = 0xffffffff;
+                } else {
+                    mem->display[cx+64*cy] = 0x000000ff;
                 }
-                draw = true;
             }
         }
     }

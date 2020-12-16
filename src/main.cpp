@@ -36,7 +36,8 @@ int main (int argc, char* argv[]) {
     while(!quit) {
         cpu.input(&event,&quit);
         cpu.execute(&event);
-        SDL_SetRenderDrawColor(renderer,0,0,0,0);
+        
+        SDL_SetRenderDrawColor(renderer,255,255,255,255);
         SDL_RenderClear(renderer);
         SDL_UpdateTexture(texture,NULL,cpu.mem->display,64*sizeof(u32));
         SDL_RenderCopy(renderer,texture,NULL,NULL);
