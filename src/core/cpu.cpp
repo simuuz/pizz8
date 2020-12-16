@@ -60,8 +60,8 @@ void Cpu::execute(SDL_Event* evt) {
         case 0xc000: v[x] = (rand() % 255) & kk; break;
         case 0xd000: dxyn(x,y,n); break;
         case 0xe000:
-        if(kk == 0x9e) { pc += (mem->key[v[x] % 15] == 1) ? 2 : 0; }
-        else if (kk == 0xa1) { pc += (mem->key[v[x] % 15] == 0) ? 2 : 0; }
+        if(kk == 0x9e) { pc += (mem->key[v[x]] == 1) ? 2 : 0; }
+        else if (kk == 0xa1) { pc += (mem->key[v[x]] == 0) ? 2 : 0; }
         else { fprintf(stderr, "Unimplemented instruction EX%x\n", kk); exit(-1); }
         
         break;
@@ -69,9 +69,11 @@ void Cpu::execute(SDL_Event* evt) {
         switch(kk) {
             case 0x07: v[x] = delay; break;
             case 0x0a:
+            pc -= 2;
             for(int i = 0; i < 16; i++) {
-                if(SDL_GetKeyboardState(NULL)[mem->key[i]]) {
+                if(mem->key[i]) {
                     v[x] = i;
+                    pc += 2;
                     break;
                 }
             }
@@ -79,7 +81,7 @@ void Cpu::execute(SDL_Event* evt) {
             case 0x15: delay = v[x]; break;
             case 0x18: sound = v[x]; break;
             case 0x1e: I += v[x]; break;
-            case 0x29: I = mem->font[v[x] & 0xf]; break;
+            case 0x29: I = 0x50 + (5 * v[x]); break;
             case 0x33:
             mem->mem[I + 2] = v[x] % 10;
             mem->mem[I + 1] = v[x] / 10 % 10;
@@ -103,14 +105,20 @@ void Cpu::execute(SDL_Event* evt) {
         break;
         default: fprintf(stderr,"Unimplemented instruction %x\n", opcode); exit(-1); break;
     }
-    //printf("Opcode %x\n", opcode);
+    
+    if (delay > 0) 
+        delay--;
+
+    if (sound > 0) 
+        sound--;
+
 }
 
 void Cpu::dxyn(u8 x, u8 y, u8 n) {
     v[0xf] = 0;
     for(int yy = 0; yy < n; yy++) {
+        u8 data = mem->mem[I+yy];
         for(int xx = 0; xx < 8; xx++) {
-            u8 data = mem->mem[I+yy];
             if(data & (0x80 >> xx)) {
                 u8 cx = (v[x] + xx) % 64, cy = (v[y] + yy) % 32;
                 if(mem->display[cx+64*cy].a == 0xff && mem->display[cx+64*cy].b == 0x20
@@ -137,42 +145,42 @@ void Cpu::input(SDL_Event* evt, bool* quit) {
             case SDL_QUIT: *quit = true; break;
             case SDL_KEYDOWN:
             switch(evt->key.keysym.sym) {
-                case SDLK_1: mem->key[0]  = 1; break;
-                case SDLK_2: mem->key[1]  = 1; break;
-                case SDLK_3: mem->key[2]  = 1; break;
-                case SDLK_4: mem->key[3]  = 1; break;
-                case SDLK_q: mem->key[4]  = 1; break;
-                case SDLK_w: mem->key[5]  = 1; break;
-                case SDLK_e: mem->key[6]  = 1; break;
-                case SDLK_r: mem->key[7]  = 1; break;
-                case SDLK_a: mem->key[8]  = 1; break;
-                case SDLK_s: mem->key[9]  = 1; break;
-                case SDLK_d: mem->key[10] = 1; break;
-                case SDLK_f: mem->key[11] = 1; break;
-                case SDLK_z: mem->key[12] = 1; break;
-                case SDLK_x: mem->key[13] = 1; break;
-                case SDLK_c: mem->key[14] = 1; break;
-                case SDLK_v: mem->key[15] = 1; break;
+                case SDLK_1: mem->key[0x1] = 1; break;
+                case SDLK_2: mem->key[0x2] = 1; break;
+                case SDLK_3: mem->key[0x3] = 1; break;
+                case SDLK_4: mem->key[0xc] = 1; break;
+                case SDLK_q: mem->key[0x4] = 1; break;
+                case SDLK_w: mem->key[0x5] = 1; break;
+                case SDLK_e: mem->key[0x6] = 1; break;
+                case SDLK_r: mem->key[0xd] = 1; break;
+                case SDLK_a: mem->key[0x7] = 1; break;
+                case SDLK_s: mem->key[0x8] = 1; break;
+                case SDLK_d: mem->key[0x9] = 1; break;
+                case SDLK_f: mem->key[0xe] = 1; break;
+                case SDLK_z: mem->key[0xa] = 1; break;
+                case SDLK_x: mem->key[0x0] = 1; break;
+                case SDLK_c: mem->key[0xb] = 1; break;
+                case SDLK_v: mem->key[0xf] = 1; break;
             }
             break;
             case SDL_KEYUP:
             switch(evt->key.keysym.sym) {
-                case SDLK_1: mem->key[0]  = 0; break;
-                case SDLK_2: mem->key[1]  = 0; break;
-                case SDLK_3: mem->key[2]  = 0; break;
-                case SDLK_4: mem->key[3]  = 0; break;
-                case SDLK_q: mem->key[4]  = 0; break;
-                case SDLK_w: mem->key[5]  = 0; break;
-                case SDLK_e: mem->key[6]  = 0; break;
-                case SDLK_r: mem->key[7]  = 0; break;
-                case SDLK_a: mem->key[8]  = 0; break;
-                case SDLK_s: mem->key[9]  = 0; break;
-                case SDLK_d: mem->key[10] = 0; break;
-                case SDLK_f: mem->key[11] = 0; break;
-                case SDLK_z: mem->key[12] = 0; break;
-                case SDLK_x: mem->key[13] = 0; break;
-                case SDLK_c: mem->key[14] = 0; break;
-                case SDLK_v: mem->key[15] = 0; break;
+                case SDLK_1: mem->key[0x1] = 0; break;
+                case SDLK_2: mem->key[0x2] = 0; break;
+                case SDLK_3: mem->key[0x3] = 0; break;
+                case SDLK_4: mem->key[0xc] = 0; break;
+                case SDLK_q: mem->key[0x4] = 0; break;
+                case SDLK_w: mem->key[0x5] = 0; break;
+                case SDLK_e: mem->key[0x6] = 0; break;
+                case SDLK_r: mem->key[0xd] = 0; break;
+                case SDLK_a: mem->key[0x7] = 0; break;
+                case SDLK_s: mem->key[0x8] = 0; break;
+                case SDLK_d: mem->key[0x9] = 0; break;
+                case SDLK_f: mem->key[0xe] = 0; break;
+                case SDLK_z: mem->key[0xa] = 0; break;
+                case SDLK_x: mem->key[0x0] = 0; break;
+                case SDLK_c: mem->key[0xb] = 0; break;
+                case SDLK_v: mem->key[0xf] = 0; break;
             }
             break;
         }

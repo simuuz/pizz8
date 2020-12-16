@@ -34,12 +34,14 @@ int main (int argc, char* argv[]) {
     Cpu cpu(&mem);
 
     while(!quit) {
-        cpu.input(&event,&quit);
         cpu.execute(&event);
 
         SDL_UpdateTexture(texture,NULL,cpu.mem->display,64*sizeof(color));
         SDL_RenderCopy(renderer,texture,NULL,NULL);
         SDL_RenderPresent(renderer);
+
+        cpu.input(&event,&quit);
+
         SDL_Delay(1);
     }
 
