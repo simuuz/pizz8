@@ -1,1 +1,0 @@
-/usr/bin/c++  -lSDL2 -std=c++17 -O3 -rdynamic CMakeFiles/chip-8.dir/src/main.cpp.o CMakeFiles/chip-8.dir/src/core/cpu.cpp.o CMakeFiles/chip-8.dir/src/core/mem.cpp.o -o chip-8 
