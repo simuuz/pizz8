@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/common.h
+iostream
+-
+cstdint
+-
+fstream
+-
+ctime
+-
+SDL2/SDL.h
+-
+
+../include/core/cpu.h
+common.h
+../include/core/common.h
+mem.h
+../include/core/mem.h
+
+../include/core/key.h
+mem.h
+../include/core/mem.h
+
+../include/core/mem.h
+common.h
+../include/core/common.h
+
+/home/simuuz/Documents/chip-8/src/core/cpu.cpp
+cpu.h
+/home/simuuz/Documents/chip-8/src/core/cpu.h
+
+/home/simuuz/Documents/chip-8/src/main.cpp
+mem.h
+/home/simuuz/Documents/chip-8/src/mem.h
+cpu.h
+/home/simuuz/Documents/chip-8/src/cpu.h
+key.h
+/home/simuuz/Documents/chip-8/src/key.h
+

@@ -1,0 +1,3 @@
+/home/simuuz/Documents/chip-8/build/CMakeFiles/rebuild_cache.dir
+/home/simuuz/Documents/chip-8/build/CMakeFiles/edit_cache.dir
+/home/simuuz/Documents/chip-8/build/CMakeFiles/chip-8.dir
