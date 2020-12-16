@@ -7,6 +7,7 @@ void Cpu::execute(SDL_Event* evt) {
     u8  x = (opcode & 0x0f00) >> 8;
     u8  y = (opcode & 0x00f0) >> 4;
     u8  kk = opcode & 0x00ff;
+    pc += 2;
     switch(opcode & 0xf000) {
         case 0x0000:
         if (kk == 0xe0) {
@@ -22,18 +23,17 @@ void Cpu::execute(SDL_Event* evt) {
             fprintf(stderr, "Unimplemented instruction 00%x\n", kk);
             exit(-1);
         }
-        pc += 2;
         break;
         case 0x1000: pc = nnn; break;
         case 0x2000: mem->stack[sp] = pc; sp++; pc = nnn; break;
-        case 0x3000: pc += (v[x] == kk) ? 2 : 0; pc += 2; break;
-        case 0x4000: pc += (v[x] != kk) ? 2 : 0; pc += 2; break;
-        case 0x5000: pc += (v[x] == v[y]) ? 2 : 0; pc += 2; break;
-        case 0x6000: v[x] = kk; pc += 2; break;
-        case 0x7000: v[x] += kk; pc += 2; break;
+        case 0x3000: pc += (v[x] == kk) ? 2 : 0; break;
+        case 0x4000: pc += (v[x] != kk) ? 2 : 0; break;
+        case 0x5000: pc += (v[x] == v[y]) ? 2 : 0; break;
+        case 0x6000: v[x] = kk; break;
+        case 0x7000: v[x] += kk; break;
         case 0x8000:
         switch(n) {
-            case 0x0: v[x]  = v[y]; break;
+            case 0x0: v[x] = v[y]; break;
             case 0x1: v[x] |= v[y]; break;
             case 0x2: v[x] &= v[y]; break;
             case 0x3: v[x] ^= v[y]; break;
@@ -52,18 +52,17 @@ void Cpu::execute(SDL_Event* evt) {
             exit(-1);
             break;
         }
-        pc += 2;
         break;
-        case 0x9000: pc += (v[x] != v[y]) ? 2 : 0; pc += 2; break;
-        case 0xa000: I = nnn; pc += 2; break;
-        case 0xb000: pc = v[0] + nnn; pc += 2; break;
-        case 0xc000: v[x] = (rand() % 255) & kk; pc += 2; break;
-        case 0xd000: dxyn(x,y,n); pc += 2; break;
+        case 0x9000: pc += (v[x] != v[y]) ? 2 : 0; break;
+        case 0xa000: I = nnn; break;
+        case 0xb000: pc = v[0] + nnn; break;
+        case 0xc000: v[x] = (rand() % 255) & kk; break;
+        case 0xd000: dxyn(x,y,n); break;
         case 0xe000:
         if(kk == 0x9e) { pc += (mem->key[v[x] % 15] == 1) ? 2 : 0; }
         else if (kk == 0xa1) { pc += (mem->key[v[x] % 15] == 0) ? 2 : 0; }
         else { fprintf(stderr, "Unimplemented instruction EX%x\n", kk); exit(-1); }
-        pc += 2;
+        
         break;
         case 0xf000:
         switch(kk) {
@@ -100,7 +99,6 @@ void Cpu::execute(SDL_Event* evt) {
             exit(-1);
             break;
         }
-        pc += 2;
         break;
         default: fprintf(stderr,"Unimplemented instruction %x\n", opcode); exit(-1); break;
     }
