@@ -25,7 +25,7 @@ int main (int argc, char* argv[]) {
 
     SDL_SetWindowTitle(window, std::string("Chip-8 - ").append(argv[1]).c_str());
 
-    SDL_Texture *texture = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_STREAMING,64,32);
+    SDL_Texture *texture = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,64,32);
     SDL_Event event;
 
     bool quit = false;
@@ -36,10 +36,8 @@ int main (int argc, char* argv[]) {
     while(!quit) {
         cpu.input(&event,&quit);
         cpu.execute(&event);
-        
-        SDL_SetRenderDrawColor(renderer,255,255,255,255);
-        SDL_RenderClear(renderer);
-        SDL_UpdateTexture(texture,NULL,cpu.mem->display,64*sizeof(u32));
+
+        SDL_UpdateTexture(texture,NULL,cpu.mem->display,64*sizeof(color));
         SDL_RenderCopy(renderer,texture,NULL,NULL);
         SDL_RenderPresent(renderer);
         SDL_Delay(1);

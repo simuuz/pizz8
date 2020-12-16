@@ -8,7 +8,12 @@ Mem::Mem(char* filename) {
     }
     int i = 0;
     char current;
-    for(int i = 0; i < 64*32*4; i++) { display[i] = 0; }
+    for(int i = 0; i < 64*32; i++) {
+        display[i].r = 0;
+        display[i].g = 0x6b;
+        display[i].b = 0x38;
+        display[i].a = 0xff;
+    }
     while(!file.eof()) {
         file.get(current);
         mem[0x200+i] = current;

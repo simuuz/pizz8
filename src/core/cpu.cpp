@@ -11,10 +11,11 @@ void Cpu::execute(SDL_Event* evt) {
     switch(opcode & 0xf000) {
         case 0x0000:
         if (kk == 0xe0) {
-            for(int yy = 0; yy < 32; yy++) {
-                for(int xx = 0; xx < 64; xx++) {
-                    mem->display[xx+64*yy] = 0xffffffff;
-                }
+            for(int i = 0; i < 64*32; i++) {
+                mem->display[i].r = 0;
+                mem->display[i].g = 0x6b;
+                mem->display[i].b = 0x38;
+                mem->display[i].a = 0xff;
             }
         } else if (kk == 0xee) {
             sp--;
@@ -112,11 +113,18 @@ void Cpu::dxyn(u8 x, u8 y, u8 n) {
             u8 data = mem->mem[I+yy];
             if(data & (0x80 >> xx)) {
                 u8 cx = (v[x] + xx) % 64, cy = (v[y] + yy) % 32;
-                if((mem->display[cx+64*cy] == 0x000000ff)) {
+                if(mem->display[cx+64*cy].a == 0xff && mem->display[cx+64*cy].b == 0x20
+                && mem->display[cx+64*cy].g == 0x18 && mem->display[cx+64*cy].r == 0x10) {
                     v[0xf] = 1;
-                    mem->display[cx+64*cy] = 0xffffffff;
+                    mem->display[cx+64*cy].r = 0;
+                    mem->display[cx+64*cy].g = 0x6b;
+                    mem->display[cx+64*cy].b = 0x38;
+                    mem->display[cx+64*cy].a = 0xff;
                 } else {
-                    mem->display[cx+64*cy] = 0x000000ff;
+                    mem->display[cx+64*cy].r = 0x10;
+                    mem->display[cx+64*cy].g = 0x18;
+                    mem->display[cx+64*cy].b = 0x20;
+                    mem->display[cx+64*cy].a = 0xff;
                 }
             }
         }
