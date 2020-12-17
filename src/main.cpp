@@ -42,7 +42,7 @@ int main (int argc, char* argv[]) {
 
         cpu.input(&event,&quit);
 
-        SDL_Delay(1);
+        SDL_Delay(2);
     }
 
     SDL_DestroyTexture(texture);

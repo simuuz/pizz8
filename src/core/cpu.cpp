@@ -109,8 +109,10 @@ void Cpu::execute(SDL_Event* evt) {
     if (delay > 0) 
         delay--;
 
-    if (sound > 0) 
+    if (sound > 0) {
+        
         sound--;
+    }
 
 }
 
