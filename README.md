@@ -10,4 +10,4 @@ This has been done in a very small amount of time ~~across 2 days~~ (actually to
 
 ## Future plans
 
-Support for SuperChip-48, hopefully
+Support for SuperChip/CHIP-48, hopefully
