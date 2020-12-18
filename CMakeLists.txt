@@ -14,7 +14,7 @@ set(INCLUDE_CORE ${INCLUDE}core/)
 include_directories(${INCLUDE})
 include_directories(${INCLUDE_CORE})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lncurses -lSDL2 -std=c++17 -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lSDL2 -std=c++17 -O3")
 
 add_executable(chip-8
     ${SRC}main.cpp
