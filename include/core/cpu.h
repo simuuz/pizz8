@@ -5,6 +5,7 @@
 class Cpu {
 public:
     Cpu(Mem* m_mem) : mem(m_mem) {}
+    void reset();
     void execute(SDL_Event* event);
     void input(SDL_Event* event, bool* quit);
     Mem* mem;

@@ -4,7 +4,6 @@
 #include <fstream>
 #include <ctime>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
 
 using u8  = uint8_t;
 using u16 = uint16_t;

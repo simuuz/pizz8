@@ -40,14 +40,14 @@ void Cpu::execute(SDL_Event* evt) {
             case 0x3: v[x] ^= v[y]; break;
             case 0x4: {
                 u16 result = v[x] + v[y];
-                if(result > 0xff) { v[0xf] = 1; } else { v[0xf] = 0; }
+                v[0xf] = (result > 0xff) ? 1 : 0;
                 v[x] = result & 0xff;
             }
             break;
             case 0x5: v[0xf] = (v[x] > v[y]) ? 1 : 0; v[x] -= v[y]; break;
             case 0x6: v[0xf] = ((v[x] & 1) == 1) ? 1 : 0; v[x] *= 0.5; break;
             case 0x7: v[0xf] = (v[y] > v[x]) ? 1 : 0; v[x] = v[y] - v[x]; break;
-            case 0xe: v[0xf] = ((v[x] & 1) == 0x80) ? 1 : 0; v[x] *= 2; break;
+            case 0xe: v[0xf] = (((v[x] & 0x80) >> 7) == 1) ? 1 : 0; v[x] *= 2; break;
             default:
             fprintf(stderr, "Unimplemented instruction 8XY%x\n", n);
             exit(-1);
@@ -109,11 +109,8 @@ void Cpu::execute(SDL_Event* evt) {
     if (delay > 0) 
         delay--;
 
-    if (sound > 0) {
-        
+    if (sound > 0)
         sound--;
-    }
-
 }
 
 void Cpu::dxyn(u8 x, u8 y, u8 n) {
@@ -163,6 +160,7 @@ void Cpu::input(SDL_Event* evt, bool* quit) {
                 case SDLK_x: mem->key[0x0] = 1; break;
                 case SDLK_c: mem->key[0xb] = 1; break;
                 case SDLK_v: mem->key[0xf] = 1; break;
+                case SDLK_h: reset(); break;
             }
             break;
             case SDL_KEYUP:
@@ -187,4 +185,10 @@ void Cpu::input(SDL_Event* evt, bool* quit) {
             break;
         }
     }
+}
+
+void Cpu::reset() {
+    mem->reset();
+    pc = 0x200; I = 0;
+    v[16] = 0; sp = 0; delay = 0; sound = 0;
 }

@@ -8,12 +8,13 @@ Mem::Mem(char* filename) {
     }
     int i = 0;
     char current;
-    for(int i = 0; i < 64*32; i++) {
-        display[i].r = 0;
-        display[i].g = 0x6b;
-        display[i].b = 0x38;
-        display[i].a = 0xff;
+    for(auto pixel : display) {
+        pixel.r = 0;
+        pixel.g = 0x6b;
+        pixel.b = 0x38;
+        pixel.a = 0xff;
     }
+
     while(!file.eof()) {
         file.get(current);
         mem[0x200+i] = current;
@@ -22,5 +23,22 @@ Mem::Mem(char* filename) {
 
     for(i = 0x50; i < 0xA0; i++) {
         mem[i] = font[i - 0x50];
+    }
+}
+
+void Mem::reset() {int i = 0;
+    for(auto pixel : display) {
+        pixel.r = 0;
+        pixel.g = 0x6b;
+        pixel.b = 0x38;
+        pixel.a = 0xff;
+    }
+
+    for(auto k : key) {
+        k = 0;
+    }
+
+    for(auto s : stack) {
+        s = 0;
     }
 }

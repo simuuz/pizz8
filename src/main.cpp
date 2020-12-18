@@ -4,7 +4,7 @@
 
 int main (int argc, char* argv[]) {
     srand(time(NULL));
-
+    
     if (argc < 2) {
         fprintf(stderr, "Must specify a rom\n");
         return -1;
@@ -42,7 +42,7 @@ int main (int argc, char* argv[]) {
 
         cpu.input(&event,&quit);
 
-        SDL_Delay(2);
+        SDL_Delay(1);
     }
 
     SDL_DestroyTexture(texture);

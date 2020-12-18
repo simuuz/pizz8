@@ -4,7 +4,8 @@
 class Mem {
 public:
     Mem(char* filename);
-    color* display = new color[64*32];
+    void reset();
+    color display[64*32];
     u16 stack[16] = {};
     u8 key[16] = {};
     u8 mem[4096] = {};
