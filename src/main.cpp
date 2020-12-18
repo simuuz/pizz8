@@ -10,6 +10,19 @@ int main (int argc, char* argv[]) {
         return -1;
     }
 
+    int delay = 1;
+
+    for(int i = 1; i < argc; i++) {
+        if (strcmp(argv[i],"--delay") == 0 || strcmp(argv[i],"-d") == 0) {
+            if (argv[i+1] != nullptr)
+                delay = atoi(argv[i+1]);
+            else {
+                fprintf(stderr, "Must specify a delay after \"--delay/-d\"\n");
+                return -1;
+            }
+        }
+    }
+
     SDL_Window *window;
     SDL_Renderer *renderer;
 
@@ -23,7 +36,11 @@ int main (int argc, char* argv[]) {
         return 3;
     }
 
-    SDL_SetWindowTitle(window, std::string("Chip-8 - ").append(argv[1]).c_str());
+    SDL_SetWindowTitle(window, std::string("Chip-8 - ")
+                               .append(std::string(argv[1]).erase(
+                                   0, std::string(argv[1]).find_last_of('/') + 1
+                               ))
+                               .c_str());
 
     SDL_Texture *texture = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,64,32);
     SDL_Event event;
@@ -42,7 +59,7 @@ int main (int argc, char* argv[]) {
 
         cpu.input(&event,&quit);
 
-        SDL_Delay(1);
+        SDL_Delay(delay);
     }
 
     SDL_DestroyTexture(texture);

@@ -8,7 +8,14 @@ This has been done in a very small amount of time ~~across 2 days~~ (actually to
 
 Have CMake, Make and SDL2 installed. Run `cmake -B build/` in the root directory and then `make -j$(nproc --all) -C build/`</br>
 
-To launch a rom, create a "roms" (or any name actually) directory inside the root directory and then run `./build/chip-8 <roms folder>/<the rom>`</br>
+To launch a rom, run `./chip-8 <roms folder>/<the rom> [options]`</br>
+
+Options (just one for now :P):
+
+```
+--delay/-d:
+    -Specify the delay (in milliseconds) between each frame
+```
 
 **Do note this has been tested only on Linux**
 
