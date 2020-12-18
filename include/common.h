@@ -11,4 +11,15 @@ using u32 = uint32_t;
 
 struct color {
     u8 r,g,b,a;
+    void operator=(const u32& other) {
+        this->r = (other >> 24) & 0xff;
+        this->g = (other >> 16) & 0xff;
+        this->b = (other >> 8) & 0xff;
+        this->a = other & 0xff;
+    }
+
+    bool operator==(const u32& other) {
+        return (this->r == ((other >> 24) & 0xff) && this->g == ((other >> 16) & 0xff) &&
+                this->b == ((other >> 8) & 0xff) && this->a == (other & 0xff));
+    }
 };

@@ -10,20 +10,7 @@ void Cpu::execute(SDL_Event* evt) {
     pc += 2;
     switch(opcode & 0xf000) {
         case 0x0000:
-        if (kk == 0xe0) {
-            for(int i = 0; i < 64*32; i++) {
-                mem->display[i].r = 0;
-                mem->display[i].g = 0x6b;
-                mem->display[i].b = 0x38;
-                mem->display[i].a = 0xff;
-            }
-        } else if (kk == 0xee) {
-            sp--;
-            pc = mem->stack[sp];
-        } else {
-            fprintf(stderr, "Unimplemented instruction 00%x\n", kk);
-            exit(-1);
-        }
+        _00kk(kk);
         break;
         case 0x1000: pc = nnn; break;
         case 0x2000: mem->stack[sp] = pc; sp++; pc = nnn; break;
@@ -33,26 +20,7 @@ void Cpu::execute(SDL_Event* evt) {
         case 0x6000: v[x] = kk; break;
         case 0x7000: v[x] += kk; break;
         case 0x8000:
-        switch(n) {
-            case 0x0: v[x] = v[y]; break;
-            case 0x1: v[x] |= v[y]; break;
-            case 0x2: v[x] &= v[y]; break;
-            case 0x3: v[x] ^= v[y]; break;
-            case 0x4: {
-                u16 result = v[x] + v[y];
-                v[0xf] = (result > 0xff) ? 1 : 0;
-                v[x] = result & 0xff;
-            }
-            break;
-            case 0x5: v[0xf] = (v[x] > v[y]) ? 1 : 0; v[x] -= v[y]; break;
-            case 0x6: v[0xf] = ((v[x] & 1) == 1) ? 1 : 0; v[x] *= 0.5; break;
-            case 0x7: v[0xf] = (v[y] > v[x]) ? 1 : 0; v[x] = v[y] - v[x]; break;
-            case 0xe: v[0xf] = (((v[x] & 0x80) >> 7) == 1) ? 1 : 0; v[x] *= 2; break;
-            default:
-            fprintf(stderr, "Unimplemented instruction 8XY%x\n", n);
-            exit(-1);
-            break;
-        }
+        _8xyn(x,y,n);
         break;
         case 0x9000: pc += (v[x] != v[y]) ? 2 : 0; break;
         case 0xa000: I = nnn; break;
@@ -62,46 +30,10 @@ void Cpu::execute(SDL_Event* evt) {
         case 0xe000:
         if(kk == 0x9e) { pc += (mem->key[v[x]] == 1) ? 2 : 0; }
         else if (kk == 0xa1) { pc += (mem->key[v[x]] == 0) ? 2 : 0; }
-        else { fprintf(stderr, "Unimplemented instruction EX%x\n", kk); exit(-1); }
-        
+        else { fprintf(stderr, "Unimplemented instruction E%x%x\n", x, kk); exit(-1); }
         break;
         case 0xf000:
-        switch(kk) {
-            case 0x07: v[x] = delay; break;
-            case 0x0a:
-            pc -= 2;
-            for(int i = 0; i < 16; i++) {
-                if(mem->key[i]) {
-                    v[x] = i;
-                    pc += 2;
-                    break;
-                }
-            }
-            break;
-            case 0x15: delay = v[x]; break;
-            case 0x18: sound = v[x]; break;
-            case 0x1e: I += v[x]; break;
-            case 0x29: I = 0x50 + (5 * v[x]); break;
-            case 0x33:
-            mem->mem[I + 2] = v[x] % 10;
-            mem->mem[I + 1] = v[x] / 10 % 10;
-            mem->mem[I] = v[x] / 100 % 10;
-            break;
-            case 0x55:
-            for(int i = 0; i <= x; i++) {
-                mem->mem[I + i] = v[i];
-            }
-            break;
-            case 0x65:
-            for(int i = 0; i <= x; i++) {
-                v[i] = mem->mem[I + i];
-            }
-            break;
-            default:
-            fprintf(stderr, "Unimplemented instruction FX%x\n", kk);
-            exit(-1);
-            break;
-        }
+        fxkk(x, kk);
         break;
         default: fprintf(stderr,"Unimplemented instruction %x\n", opcode); exit(-1); break;
     }
@@ -113,6 +45,46 @@ void Cpu::execute(SDL_Event* evt) {
         sound--;
 }
 
+void Cpu::_00kk(u16 kk) {
+    switch(kk) {
+        case 0xe0:
+        for(auto& pixel : mem->display) {
+            pixel = 0x006b38ff;
+        }
+        break;
+        case 0xee:
+        sp--;
+        pc = mem->stack[sp];
+        break;
+        default:
+        fprintf(stderr, "Unimplemented instruction 00%x\n", kk);
+        exit(-1);
+    }
+}
+
+void Cpu::_8xyn(u8 x, u8 y, u8 n) {
+    switch(n) {
+        case 0x0: v[x] = v[y]; break;
+        case 0x1: v[x] |= v[y]; break;
+        case 0x2: v[x] &= v[y]; break;
+        case 0x3: v[x] ^= v[y]; break;
+        case 0x4: {
+            u16 result = v[x] + v[y];
+            v[0xf] = (result > 0xff) ? 1 : 0;
+            v[x] = result & 0xff;
+        }
+        break;
+        case 0x5: v[0xf] = (v[x] > v[y]) ? 1 : 0; v[x] -= v[y]; break;
+        case 0x6: v[0xf] = ((v[x] & 1) == 1) ? 1 : 0; v[x] *= 0.5; break;
+        case 0x7: v[0xf] = (v[y] > v[x]) ? 1 : 0; v[x] = v[y] - v[x]; break;
+        case 0xe: v[0xf] = ((v[x] & 0x80) == 0x80) ? 1 : 0; v[x] *= 2; break;
+        default:
+        fprintf(stderr, "Unimplemented instruction 8%x%x%x\n", x, y, n);
+        exit(-1);
+        break;
+    }
+}
+
 void Cpu::dxyn(u8 x, u8 y, u8 n) {
     v[0xf] = 0;
     for(int yy = 0; yy < n; yy++) {
@@ -120,21 +92,50 @@ void Cpu::dxyn(u8 x, u8 y, u8 n) {
         for(int xx = 0; xx < 8; xx++) {
             if(data & (0x80 >> xx)) {
                 u8 cx = (v[x] + xx) % 64, cy = (v[y] + yy) % 32;
-                if(mem->display[cx+64*cy].a == 0xff && mem->display[cx+64*cy].b == 0x20
-                && mem->display[cx+64*cy].g == 0x18 && mem->display[cx+64*cy].r == 0x10) {
+                if(mem->display[cx+64*cy] == 0x101820ff) {
                     v[0xf] = 1;
-                    mem->display[cx+64*cy].r = 0;
-                    mem->display[cx+64*cy].g = 0x6b;
-                    mem->display[cx+64*cy].b = 0x38;
-                    mem->display[cx+64*cy].a = 0xff;
+                    mem->display[cx+64*cy] = 0x006b38ff;
                 } else {
-                    mem->display[cx+64*cy].r = 0x10;
-                    mem->display[cx+64*cy].g = 0x18;
-                    mem->display[cx+64*cy].b = 0x20;
-                    mem->display[cx+64*cy].a = 0xff;
+                    mem->display[cx+64*cy] = 0x101820ff;
                 }
             }
         }
+    }
+}
+
+void Cpu::fxkk(u8 x, u16 kk) {
+    switch(kk) {
+        case 0x07: v[x] = delay; break;
+        case 0x0a:
+        pc -= 2; { int c = 0;
+        for(auto i : mem->key) {
+            if(i) { v[x] = c; pc += 2; break; }
+            c++;
+        }}
+        break;
+        case 0x15: delay = v[x]; break;
+        case 0x18: sound = v[x]; break;
+        case 0x1e: I += v[x]; break;
+        case 0x29: I = 0x50 + (5 * v[x]); break;
+        case 0x33:
+        mem->mem[I + 2] = v[x] % 10;
+        mem->mem[I + 1] = v[x] / 10 % 10;
+        mem->mem[I] = v[x] / 100 % 10;
+        break;
+        case 0x55:
+        for(int i = 0; i <= x; i++) {
+            mem->mem[I + i] = v[i];
+        }
+        break;
+        case 0x65:
+        for(int i = 0; i <= x; i++) {
+            v[i] = mem->mem[I + i];
+        }
+        break;
+        default:
+        fprintf(stderr, "Unimplemented instruction F%x%x\n", x, kk);
+        exit(-1);
+        break;
     }
 }
 
