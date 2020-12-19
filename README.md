@@ -10,11 +10,14 @@ Have CMake, Make and SDL2 installed. Run `cmake -B build/` in the root directory
 
 To launch a rom, run `./chip-8 <roms folder>/<the rom> [options]`</br>
 
-Options (just one for now :P):
+Options (just two for now :P):
 
 ```
 --delay/-d:
-    -Specify the delay (in milliseconds) between each frame
+    -Specify the delay (in milliseconds, default: 16) between each frame
+
+--scale/-s:
+    -Specify a window scale (default: 10, so the window will be 640x320)
 ```
 
 **Do note this has been tested only on Linux**

@@ -9,6 +9,8 @@ public:
     void execute(SDL_Event* event);
     void input(SDL_Event* event, bool* quit);
     Mem* mem;
+    int instructions = 0;
+    bool draw = false;
 private:
     void _00kk(u16 kk);
     void _8xyn(u8 x, u8 y, u8 n);

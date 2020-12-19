@@ -43,6 +43,8 @@ void Cpu::execute(SDL_Event* evt) {
 
     if (sound > 0)
         sound--;
+
+    instructions++;
 }
 
 void Cpu::_00kk(u16 kk) {
@@ -98,6 +100,7 @@ void Cpu::dxyn(u8 x, u8 y, u8 n) {
                 } else {
                     mem->display[cx+64*cy] = 0x101820ff;
                 }
+                draw = true;
             }
         }
     }
@@ -192,4 +195,5 @@ void Cpu::reset() {
     mem->reset();
     pc = 0x200; I = 0;
     v[16] = 0; sp = 0; delay = 0; sound = 0;
+    instructions = 0;
 }
