@@ -1,6 +1,5 @@
 #include "mem.h"
 #include "cpu.h"
-#include "key.h"
 
 int main (int argc, char* argv[]) {
     srand(time(NULL));
