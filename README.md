@@ -20,7 +20,7 @@ Options (just two for now :P):
     -Specify a window scale (default: 10, so the window will be 640x320)
 ```
 
-**Do note this has been tested only on Linux**
+**Do note this has been tested only on Linux**</br>
 **[1] DON'T USE "-d 0"**
 
 ![Corax89's test passing](opcode.png)
