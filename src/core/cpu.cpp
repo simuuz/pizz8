@@ -8,12 +8,13 @@ void Cpu::execute(SDL_Event* evt) {
     u8  y = (opcode & 0x00f0) >> 4;
     u8  kk = opcode & 0x00ff;
     pc += 2;
+    
     switch(opcode & 0xf000) {
         case 0x0000:
         _00kk(kk);
         break;
-        case 0x1000: pc = nnn; break;
-        case 0x2000: mem->stack[sp] = pc; sp++; pc = nnn; break;
+        case 0x1000: idle = (nnn == pc - 2); pc = nnn; break;
+        case 0x2000: idle = (nnn == pc - 2); mem->stack[sp] = pc; sp++; pc = nnn; break;
         case 0x3000: pc += (v[x] == kk) ? 2 : 0; break;
         case 0x4000: pc += (v[x] != kk) ? 2 : 0; break;
         case 0x5000: pc += (v[x] == v[y]) ? 2 : 0; break;
@@ -24,7 +25,7 @@ void Cpu::execute(SDL_Event* evt) {
         break;
         case 0x9000: pc += (v[x] != v[y]) ? 2 : 0; break;
         case 0xa000: I = nnn; break;
-        case 0xb000: pc = v[0] + nnn; break;
+        case 0xb000: idle = (v[0] + nnn == pc - 2); pc = v[0] + nnn; break;
         case 0xc000: v[x] = (rand() % 255) & kk; break;
         case 0xd000: dxyn(x,y,n); break;
         case 0xe000:
@@ -43,8 +44,6 @@ void Cpu::execute(SDL_Event* evt) {
 
     if (sound > 0)
         sound--;
-
-    instructions++;
 }
 
 void Cpu::_00kk(u16 kk) {
@@ -56,6 +55,7 @@ void Cpu::_00kk(u16 kk) {
         break;
         case 0xee:
         sp--;
+        idle = (mem->stack[sp] == pc - 2);
         pc = mem->stack[sp];
         break;
         default:
@@ -110,7 +110,7 @@ void Cpu::fxkk(u8 x, u16 kk) {
     switch(kk) {
         case 0x07: v[x] = delay; break;
         case 0x0a:
-        pc -= 2; { int c = 0;
+        pc -= 2; idle = true; {int c = 0;
         for(auto i : mem->key) {
             if(i) { v[x] = c; pc += 2; break; }
             c++;
@@ -193,7 +193,9 @@ void Cpu::input(SDL_Event* evt, bool* quit) {
 
 void Cpu::reset() {
     mem->reset();
+    draw = false; idle = false;
     pc = 0x200; I = 0;
-    v[16] = 0; sp = 0; delay = 0; sound = 0;
-    instructions = 0;
+    for(auto& reg : v) 
+        reg = 0;
+    sp = 0; delay = 0; sound = 0;
 }

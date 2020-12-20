@@ -1,6 +1,6 @@
 # pizza8
 
-Simple C++ Chip-8 interpreter implemented in SDL2</br>
+Fast C++ Chip-8 interpreter implemented in SDL2</br>
 
 This has been done in a very small amount of time ~~across 2 days~~ (actually took more time to fix stuff), ~~could be called a "speedrun" if you want~~</br>
 
@@ -14,13 +14,14 @@ Options (just two for now :P):
 
 ```
 --delay/-d:
-    -Specify the delay (in milliseconds, default: 16) between each frame
+    -Specify the delay (in milliseconds, default: 16 [1]) between each frame
 
 --scale/-s:
     -Specify a window scale (default: 10, so the window will be 640x320)
 ```
 
 **Do note this has been tested only on Linux**
+**[1] DON'T USE "-d 0"**
 
 ![Corax89's test passing](opcode.png)
 ![BestCoder test passing](bc_test.png)

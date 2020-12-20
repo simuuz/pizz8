@@ -67,10 +67,16 @@ int main (int argc, char* argv[]) {
 
     while(!quit) {
         auto start = cl_hires::now();
-        while(!cpu.draw)
+
+        while(!cpu.draw && !cpu.idle)
             cpu.execute(&event);
+
+        cpu.idle = false;
+
         float average_core = std::chrono::duration<float, std::milli>(cl_hires::now() - start).count();
         std::string core_fps = std::to_string(1000/average_core);
+
+        cpu.input(&event,&quit);
 
         if(cpu.draw) {
             SDL_UpdateTexture(texture,NULL,cpu.mem->display,64*sizeof(color));
@@ -79,8 +85,8 @@ int main (int argc, char* argv[]) {
             cpu.draw = false;
         }
 
-        cpu.input(&event,&quit);
         SDL_Delay(delay);
+        
         float average_window = std::chrono::duration<float, std::milli>(cl_hires::now() - start).count();
         std::string window_fps = std::to_string(1000/average_window);
         SDL_SetWindowTitle(window, std::string(title + " [" + window_fps.erase(window_fps.find_first_of('.')) + 
