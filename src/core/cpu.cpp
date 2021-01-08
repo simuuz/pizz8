@@ -49,9 +49,7 @@ void Cpu::execute(SDL_Event* evt) {
 void Cpu::_00kk(u16 kk) {
     switch(kk) {
         case 0xe0:
-        for(auto& pixel : mem->display) {
-            pixel = 0x006b38ff;
-        }
+        std::fill(std::begin(display), std::end(display), 0x006b38ff);
         break;
         case 0xee:
         sp--;
@@ -195,7 +193,6 @@ void Cpu::reset() {
     mem->reset();
     draw = false; idle = false;
     pc = 0x200; I = 0;
-    for(auto& reg : v) 
-        reg = 0;
+    std::fill(std::begin(v), std::end(v), 0);
     sp = 0; delay = 0; sound = 0;
 }

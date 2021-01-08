@@ -7,9 +7,7 @@ Mem::Mem(char* filename) {
         exit(-1);
     }
 
-    for(auto& pixel : display) {
-        pixel = 0x006b38ff;
-    }
+    std::fill(std::begin(display), std::end(display), 0x006b38ff);
 
     int i = 0;
     char current;
@@ -26,15 +24,7 @@ Mem::Mem(char* filename) {
 }
 
 void Mem::reset() {int i = 0;
-    for(auto& pixel : display) {
-        pixel = 0x006b38ff;
-    }
-
-    for(auto& k : key) {
-        k = 0;
-    }
-
-    for(auto& s : stack) {
-        s = 0;
-    }
+    std::fill(std::begin(display), std::end(display), 0x006b38ff);
+    std::fill(std::begin(key), std::end(key), 0);
+    std::fill(std::begin(stack), std::end(stack), 0);
 }
