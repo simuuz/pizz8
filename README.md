@@ -1,4 +1,4 @@
-# pizza8
+# pizz8
 
 Fast C++ Chip-8 interpreter implemented in SDL2</br>
 
