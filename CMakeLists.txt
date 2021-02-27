@@ -2,21 +2,21 @@ cmake_minimum_required(VERSION 3.1.0)
 
 project(chip-8)
 
-if(CMAKE_VERSION VERSION_LESS "3.7.0")
-    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif()
+set(CMAKE_CXX_STANDARD 17)
+set(CORE src/core/)
+set(INCLUDE_CORE include/core/)
+set(XBYAK include/xbyak/xbyak/)
 
-set(SRC src/)
-set(SRC_CORE ${SRC}core/)
-set(INCLUDE include/)
-set(INCLUDE_CORE ${INCLUDE}core/)
-
-include_directories(${INCLUDE})
+include_directories(include/)
 include_directories(${INCLUDE_CORE})
+include_directories(${XBYAK})
+find_package(SDL2 REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lSDL2 -std=c++17 -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 add_executable(chip-8
-    ${SRC}main.cpp
-    ${SRC_CORE}cpu.cpp
-    ${SRC_CORE}mem.cpp)
+    src/main.cpp
+    ${CORE}emu.cpp
+)
+
+target_link_libraries(chip-8 SDL2)
